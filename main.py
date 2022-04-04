@@ -13,16 +13,26 @@ def vyber_koho_obesit():
         hra_uvod_text_1 = get_font(40).render("Koho chceš obesiť?", True, "#FFFFFF")
         hra_uvod_text_1_rect = hra_uvod_text_1.get_rect(center=(400,100))
 
-         
+        Ronko_tlacitko = button(pos = (200,350), text_input = "Ronnka", font = get_font(30),base_color = tlacitko_1_base, hovering_color = tlacitko_1_hovering)
+        Zajko_tlacitko = button(pos = (590,350), text_input = "Zajka", font = get_font(30),base_color = tlacitko_1_base, hovering_color = tlacitko_1_hovering)
 
+        for tlacitko in [Ronko_tlacitko, Zajko_tlacitko]:
+            tlacitko.zmenenie_farby(myska_pozicia)
+            tlacitko.aktualizuj(OKNO)
+         
         OKNO.blit(hra_uvod_text_1,hra_uvod_text_1_rect)
-        OKNO.blit(ronko,(170, 200))
-        OKNO.blit(zajko,(470, 200))
+        OKNO.blit(ronko,(150, 200))
+        OKNO.blit(zajko,(550, 200))
 
         pygame.display.update()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if Ronko_tlacitko.check_na_stlacenie(myska_pozicia):
+                    pass
+                if Zajko_tlacitko.check_na_stlacenie(myska_pozicia):
+                    pass
 
 def main_menu():
     while True:
@@ -75,6 +85,6 @@ clock = pygame.time.Clock()
 
 #ukaz ronka a zajka
 ronko = pygame.image.load("./Obrazky/ronko.png")
-zajko = pygame.image.load("./Zajko/zajko.png")
+zajko = pygame.image.load("./Obrazky/zajko.png")
 
 main_menu()
