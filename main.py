@@ -4,11 +4,26 @@ from tlacitko import button
 def get_font(size):
     return pygame.font.Font("font.ttf", size)
 
+def hra(x):
+    while True:
+        myska_pozicia = pygame.mouse.get_pos()
+        clock.tick(FPS)
+        OKNO.fill(pozadie_biela)
+        if x == 0:
+            OKNO.blit(obrazky_ronnie[hangman_obrazok], (1,1))
+        elif x == 1:
+            OKNO.blit(obrazky_zajko[hangman_obrazok], (1,1))
+
+        pygame.display.update()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+
 def vyber_koho_obesit():
     while True:
         myska_pozicia = pygame.mouse.get_pos()
         clock.tick(FPS)
-        OKNO.fill(pozadie)
+        OKNO.fill(pozadie_siva)
 
         hra_uvod_text_1 = get_font(40).render("Koho chceš obesiť?", True, "#FFFFFF")
         hra_uvod_text_1_rect = hra_uvod_text_1.get_rect(center=(400,100))
@@ -22,7 +37,7 @@ def vyber_koho_obesit():
          
         OKNO.blit(hra_uvod_text_1,hra_uvod_text_1_rect)
         OKNO.blit(ronko,(150, 200))
-        OKNO.blit(zajko,(550, 200))
+        OKNO.blit(zajkoo,(550, 200))
 
         pygame.display.update()
         for event in pygame.event.get():
@@ -30,15 +45,18 @@ def vyber_koho_obesit():
                 pygame.quit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if Ronko_tlacitko.check_na_stlacenie(myska_pozicia):
-                    pass
+                    x = 0
+                    hra(x)
                 if Zajko_tlacitko.check_na_stlacenie(myska_pozicia):
-                    pass
+                    x = 1
+                    hra(x)
+                    
 
 def main_menu():
     while True:
         myska_pozicia = pygame.mouse.get_pos()
         clock.tick(FPS)
-        OKNO.fill(pozadie)
+        OKNO.fill(pozadie_siva)
 
         menu_text = get_font(100).render("Menu", True, "#FFFFFF")
         menu_text_rect = menu_text.get_rect(center=(400,100))
@@ -69,7 +87,8 @@ def main_menu():
                     
 
 #farby
-pozadie = "#858282"
+pozadie_siva = "#858282"
+pozadie_biela = "#ffffff"
 tlacitko_1_base = "#454141"
 tlacitko_1_hovering = "#1f1d1d"
 
@@ -85,6 +104,20 @@ clock = pygame.time.Clock()
 
 #ukaz ronka a zajka
 ronko = pygame.image.load("./Obrazky/ronko.png")
-zajko = pygame.image.load("./Obrazky/zajko.png")
+zajkoo = pygame.image.load("./Obrazky/zajko.png")
+
+#ukaz ako bude ronko obeseny
+obrazky_ronnie = []
+for i in range (7):
+    obrazok_ronnie = pygame.image.load("./Obrazky/hangman_ronnie_" + str(i) + ".png") 
+    obrazky_ronnie.append(obrazok_ronnie)
+
+#ukaz ako bude zajko obeseny
+obrazky_zajko = []
+for i in range (7):
+    obrazok_zajko = pygame.image.load("./Obrazky/hangman_zajko_" + str(i) + ".png") 
+    obrazky_zajko.append(obrazok_zajko)
+
+hangman_obrazok = 0
 
 main_menu()
