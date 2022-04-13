@@ -1,13 +1,10 @@
 import pygame
 from tlacitko import button
 
-def get_font_normal(size):
-    return pygame.font.Font("Amatic-Bold.ttf", size)
-
 def get_font_pixel(size):
     return pygame.font.Font("font.ttf", size)
 
-def hra(hrac):
+def hra(hrac, slova):
     while True:
         myska_pozicia = pygame.mouse.get_pos()
         clock.tick(FPS)
@@ -24,7 +21,7 @@ def hra(hrac):
                 pygame.quit()
 
 
-def vyber_koho_obesit():
+def vyber_koho_obesit(slova):
     while True:
         myska_pozicia = pygame.mouse.get_pos()
         clock.tick(FPS)
@@ -33,8 +30,8 @@ def vyber_koho_obesit():
         hra_uvod_text_1 = get_font_pixel(40).render("Koho chceš obesiť?", True, cierna)
         hra_uvod_text_1_rect = hra_uvod_text_1.get_rect(center=(400,100))
 
-        Ronko_tlacitko = button(pos = (200,350), text_input = "Ronnka", font = get_font_normal(30),base_color = cierna, hovering_color = zelena)
-        Zajko_tlacitko = button(pos = (590,350), text_input = "Zajka", font = get_font_normal(30),base_color = cierna, hovering_color = cervena)
+        Ronko_tlacitko = button(pos = (200,350), text_input = "Ronnka", font = get_font_pixel(30),base_color = cierna, hovering_color = zelena)
+        Zajko_tlacitko = button(pos = (590,350), text_input = "Zajka", font = get_font_pixel(30),base_color = cierna, hovering_color = cervena)
 
         for tlacitko in [Ronko_tlacitko, Zajko_tlacitko]:
             tlacitko.zmenenie_farby(myska_pozicia)
@@ -51,10 +48,10 @@ def vyber_koho_obesit():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if Ronko_tlacitko.check_na_stlacenie(myska_pozicia):
                     hrac = 0
-                    hra(hrac)
+                    hra(hrac, slova)
                 if Zajko_tlacitko.check_na_stlacenie(myska_pozicia):
                     hrac = 1
-                    hra(hrac)
+                    hra(hrac, slova)
 
 def vyber_narocnosti():
     while True:
@@ -62,8 +59,17 @@ def vyber_narocnosti():
         clock.tick(FPS)
         OKNO.fill(biela)
 
-        vyber_text_narocnost = get_font_pixel(40).render("Ake chces slova", True, cierna)
+        vyber_text_narocnost = get_font_pixel(50).render("Ake chces slova", True, cierna)
         vyber_text_narocnost_rect = vyber_text_narocnost.get_rect(center=(400,100))
+
+        lahke_tacitko = button( pos=(400,200), text_input="lahke", font= get_font_pixel(30), base_color = cierna, hovering_color = zelena)
+        stredne_tacitko = button( pos=(400,275), text_input="stredne tazke", font= get_font_pixel(30), base_color = cierna, hovering_color = zlta)
+        tazke_tacitko = button( pos=(400,350), text_input="tazke", font= get_font_pixel(30), base_color = cierna, hovering_color = cervena)
+
+
+        for tlacitko in [lahke_tacitko,stredne_tacitko,tazke_tacitko]:
+            tlacitko.zmenenie_farby(myska_pozicia)
+            tlacitko.aktualizuj(OKNO)
 
         OKNO.blit(vyber_text_narocnost,vyber_text_narocnost_rect)
 
@@ -71,7 +77,18 @@ def vyber_narocnosti():
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit()      
+                pygame.quit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if lahke_tacitko.check_na_stlacenie(myska_pozicia):
+                    slova = lahke_slova
+                    vyber_koho_obesit(slova)
+                if stredne_tacitko.check_na_stlacenie(myska_pozicia):
+                    slova = stredne_slova
+                    vyber_koho_obesit(slova)
+                if tazke_tacitko.check_na_stlacenie(myska_pozicia):
+                    slova = tazke_slova
+                    vyber_koho_obesit(slova)
+
 
 def main_menu():
     while True:
@@ -112,6 +129,12 @@ biela = "#ffffff"
 cierna = "#000000"
 cervena = "#fc0b03"
 zelena = "#03fc0f"
+zlta = "#fff70d"
+
+#slova
+lahke_slova = ["python", "zajac", "pes", "dom"]
+stredne_slova = ["programovanie", "batoh", "radost", "monitor"]
+tazke_slova = ["magnetka", "horcik", "mineralka", "opatrovatelka"]
 
 #nastavenia okna
 pygame.init()
