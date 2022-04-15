@@ -1,24 +1,48 @@
 import pygame
+import math
 from tlacitko import button
+
 
 def get_font_pixel(size):
     return pygame.font.Font("font.ttf", size)
+
+def kresli(hrac):
+    OKNO.fill(biela)
+
+    #kreslenie tlacitoooook
+    for pismenko in pismenka:
+        x, y, pis, viditelne = pismenko
+        if viditelne:
+            pygame.draw.circle(OKNO, cierna, (x,y), polomer, 3)
+            text = get_font_pixel(20).render(pis, 1, cierna)
+            OKNO.blit(text, (x - text.get_width()/2 ,y - text.get_height()/2))
+
+    if hrac == 0:
+        OKNO.blit(obrazky_ronnie[hangman_obrazok], (1,1))
+    elif hrac == 1:
+        OKNO.blit(obrazky_zajko[hangman_obrazok], (1,1))
+
+    pygame.display.update()
 
 def hra(hrac, slova):
     while True:
         myska_pozicia = pygame.mouse.get_pos()
         clock.tick(FPS)
-        OKNO.fill(biela)
+        kresli(hrac)
 
-        if hrac == 0:
-            OKNO.blit(obrazky_ronnie[hangman_obrazok], (1,1))
-        elif hrac == 1:
-            OKNO.blit(obrazky_zajko[hangman_obrazok], (1,1))
-
-        pygame.display.update()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                m_x, m_y = myska_pozicia
+                for pismenko in pismenka:
+                    x, y, pis, viditelne = pismenko
+                    if viditelne:
+                        vzdialenost = math.sqrt((x - m_x)**2 + (y - m_y)**2)
+                        if vzdialenost < polomer:
+                            pismenko[3] = False
+
+
 
 
 def vyber_koho_obesit(slova):
@@ -162,6 +186,20 @@ for i in range (7):
     obrazok_zajko = pygame.image.load("./Obrazky/hangman_zajko_" + str(i) + ".png") 
     obrazky_zajko.append(obrazok_zajko)
 
+#status popravy
 hangman_obrazok = 0
+
+#vytvorenie tlacitka s pismenkom
+polomer = 20
+medzera = 15
+pismenka = []
+startx = round((SIRKA - (polomer *2 + medzera) * 13)/2)
+starty = 400
+A = 65
+for i in range(26):
+    x = startx + medzera * 2 + ((polomer * 2 +medzera) * (i % 13))
+    y = starty + ((i // 13) * (medzera + polomer * 2))
+    pismenka.append([x,y, chr(A + i), True])
+
 
 main_menu()
