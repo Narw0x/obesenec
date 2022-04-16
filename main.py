@@ -8,12 +8,12 @@ biela = "#ffffff"
 cierna = "#000000"
 cervena = "#fc0b03"
 zelena = "#03fc0f"
-zlta = "#fff70d"
+oranzova = "#fa9507"
 
 #slova
 lahke_slova = ["PYTHON", "ZAJAC", "PES", "DOM"]
-stredne_slova = ["PROGRAMOVVANIE", "BATOH", "DEVELOPER", "MONITOR"]
-tazke_slova = ["MAGNETKA", "HORCIK", "MINERALKA", "OPATROVATELKA"]
+stredne_slova = ["PROGRAMOVANIE", "BATOH", "DEVELOPER", "MONITOR"]
+tazke_slova = ["MAGNETKA", "HORCIK", "MINERALKA", "TANIER"]
 
 #nastavenia okna
 pygame.init()
@@ -56,41 +56,59 @@ startx = round((SIRKA - (polomer *2 + medzera) * 13)/2)
 starty = 400
 A = 65
 for i in range(26):
-    x = startx + medzera * 2 + ((polomer * 2 +medzera) * (i % 13))
-    y = starty + ((i // 13) * (medzera + polomer * 2))
-    pismenka.append([x,y, chr(A + i), True])
+    x = startx + medzera * 2 + ((polomer * 2 +medzera) * (i % 13))  #vytvorenie pozicii na Xovej osi
+    y = starty + ((i // 13) * (medzera + polomer * 2))              #vytvorenie pozicii na Yovej osi        //-delenie celych cisel = pokial i nebude >= 13 tak tam bude 0
+    pismenka.append([x,y, chr(A + i), True])                        #x, y urcoju poziciu , chr(A+1) - pismenko ktore tam bude , True - viditelne alebo neviditelne
 
 def get_font_pixel(size):
     return pygame.font.Font("font.ttf", size)
 
-def vyhra_hry(hrac):
+def koniec_hry(hrac, stav_hry, vybrane_slovo):
+    global hangman_obrazok
     while True:
+        myska_pozicia = pygame.mouse.get_pos()
         OKNO.fill(biela)
+        if stav_hry == 1:
+            vyhra_text = get_font_pixel(50).render(hrac + " prezil! ", True, cierna)
+            vyhra_text_rect = vyhra_text.get_rect(center=(400,270))
+            OKNO.blit(vyhra_text,vyhra_text_rect)
+        else:
+            prehra_text = get_font_pixel(50).render(hrac + " zomrel! ", True, cierna)
+            prehra_text_rect = prehra_text.get_rect(center=(400,270))
+            OKNO.blit(prehra_text,prehra_text_rect)
 
-        vyhra_text = get_font_pixel(50).render(hrac + " prezil! ", True, cierna)
-        vyhra_text_rect = vyhra_text.get_rect(center=(400,250))
+        spravne_slovo_text = get_font_pixel(18).render("Spravne slovo bolo: " + vybrane_slovo, True, cierna)
+        spravne_slovo_text_rect = spravne_slovo_text.get_rect(center=(450,190))
 
-        OKNO.blit(vyhra_text,vyhra_text_rect)
+        vypnut_tlacitko = button(pos=(400,400), text_input="Vypnut", font= get_font_pixel(70), base_color = cierna, hovering_color = cervena)
+
+        for tlacitko in [vypnut_tlacitko]:
+            tlacitko.zmenenie_farby(myska_pozicia)
+            tlacitko.aktualizuj(OKNO)
+
+        if hrac == "ronko":
+            if hangman_obrazok > 6:
+                hangman_obrazok = 6
+                OKNO.blit(obrazky_ronnie[hangman_obrazok], (1,1))
+            else:
+                OKNO.blit(obrazky_ronnie[hangman_obrazok], (1,1))
+            
+        if hrac == "zajko":
+            if hangman_obrazok > 6:
+                hangman_obrazok = 6
+                OKNO.blit(obrazky_zajko[hangman_obrazok], (1,1))
+            else:
+                OKNO.blit(obrazky_ronnie[hangman_obrazok], (1,1))
+
+        OKNO.blit(spravne_slovo_text, spravne_slovo_text_rect)
 
         pygame.display.update()
         for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
-                
-def prehra(hrac):
-    while True:
-        OKNO.fill(biela)
-
-        prehra_text = get_font_pixel(50).render(hrac + " zomrel! ", True, cierna)
-        prehra_text_rect = prehra_text.get_rect(center=(400,250))
-
-        OKNO.blit(prehra_text,prehra_text_rect)
-
-        pygame.display.update()
-
-        for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if vypnut_tlacitko.check_na_stlacenie(myska_pozicia):
+                        pygame.quit()
 
 def kresli(hrac, vybrane_slovo):
     OKNO.fill(biela)
@@ -102,8 +120,8 @@ def kresli(hrac, vybrane_slovo):
             ukazane_slovo += pismenko + " "
         else:
             ukazane_slovo += "_ "
-    text = get_font_pixel(30).render(ukazane_slovo, 1, cierna)
-    OKNO.blit(text , (400,200))
+    text = get_font_pixel(20).render(ukazane_slovo, 1, cierna)
+    OKNO.blit(text , (300,200))
 
     #kreslenie tlacitoooook
     for pismenko in pismenka:
@@ -118,6 +136,11 @@ def kresli(hrac, vybrane_slovo):
     elif hrac == "zajko":
         OKNO.blit(obrazky_zajko[hangman_obrazok], (1,1))
 
+    hadaj_text = get_font_pixel(35).render("Hadaj slovicko!", True, cierna)
+    hadaj_text_rect = hadaj_text.get_rect(center=(500,100))
+
+    OKNO.blit(hadaj_text,hadaj_text_rect)
+
     pygame.display.update()
 
 def hra(hrac, vybrane_slovo):
@@ -127,6 +150,11 @@ def hra(hrac, vybrane_slovo):
         myska_pozicia = pygame.mouse.get_pos()
         clock.tick(FPS)
         OKNO.fill(biela)
+
+        hadaj_text = get_font_pixel(40).render("Hadaj slovicko!", True, cierna)
+        hadaj_text_rect = hadaj_text.get_rect(center=(500,100))
+
+        OKNO.blit(hadaj_text,hadaj_text_rect)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -152,10 +180,12 @@ def hra(hrac, vybrane_slovo):
                 break
 
         if vyhra:
-            vyhra_hry(hrac)
+            stav_hry = 1
+            koniec_hry(hrac, stav_hry, vybrane_slovo)
 
-        if hangman_obrazok == 6:
-            prehra(hrac)
+        if hangman_obrazok >= 6:
+            stav_hry = 0
+            koniec_hry(hrac, stav_hry, vybrane_slovo)
             
 def vyber_koho_obesit(vybrane_slovo):
     while True:
@@ -199,7 +229,7 @@ def vyber_narocnosti():
         vyber_text_narocnost_rect = vyber_text_narocnost.get_rect(center=(400,100))
 
         lahke_tacitko = button( pos=(400,200), text_input="lahke", font= get_font_pixel(30), base_color = cierna, hovering_color = zelena)
-        stredne_tacitko = button( pos=(400,275), text_input="stredne tazke", font= get_font_pixel(30), base_color = cierna, hovering_color = zlta)
+        stredne_tacitko = button( pos=(400,275), text_input="stredne tazke", font= get_font_pixel(30), base_color = cierna, hovering_color = oranzova)
         tazke_tacitko = button( pos=(400,350), text_input="tazke", font= get_font_pixel(30), base_color = cierna, hovering_color = cervena)
 
 
@@ -251,7 +281,6 @@ def main_menu():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if hra_tlacitko.check_na_stlacenie(myska_pozicia):
                     vyber_narocnosti()
-                
                 if vypnut_tlacitko.check_na_stlacenie(myska_pozicia):
                     pygame.quit()
                     
