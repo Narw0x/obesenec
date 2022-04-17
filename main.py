@@ -12,7 +12,7 @@ oranzova = "#fa9507"
 
 #slova
 lahke_slova = ["PYTHON", "ZAJAC", "PES", "DOM"]
-stredne_slova = ["PROGRAMOVANIE", "BATOH", "DEVELOPER", "MONITOR"]
+stredne_slova = ["PROGRAM", "TLACIAREN", "DEVELOPER", "MONITOR"]
 tazke_slova = ["MAGNETKA", "HORCIK", "MINERALKA", "TANIER"]
 
 #nastavenia okna
@@ -98,7 +98,7 @@ def koniec_hry(hrac, stav_hry, vybrane_slovo):
                 hangman_obrazok = 6
                 OKNO.blit(obrazky_zajko[hangman_obrazok], (1,1))
             else:
-                OKNO.blit(obrazky_ronnie[hangman_obrazok], (1,1))
+                OKNO.blit(obrazky_zajko[hangman_obrazok], (1,1))
 
         OKNO.blit(spravne_slovo_text, spravne_slovo_text_rect)
 
@@ -132,9 +132,17 @@ def kresli(hrac, vybrane_slovo):
             OKNO.blit(text, (x - text.get_width()/2 ,y - text.get_height()/2))
 
     if hrac == "ronko":
-        OKNO.blit(obrazky_ronnie[hangman_obrazok], (1,1))
-    elif hrac == "zajko":
-        OKNO.blit(obrazky_zajko[hangman_obrazok], (1,1))
+        if hangman_obrazok > 6:
+            stav_hry = 0
+            koniec_hry(hrac, stav_hry, vybrane_slovo)
+        else:
+            OKNO.blit(obrazky_ronnie[hangman_obrazok], (1,1))
+    if hrac == "zajko":
+        if hangman_obrazok > 6:
+            stav_hry = 0
+            koniec_hry(hrac, stav_hry, vybrane_slovo)
+        else:
+            OKNO.blit(obrazky_zajko[hangman_obrazok], (1,1))
 
     hadaj_text = get_font_pixel(35).render("Hadaj slovicko!", True, cierna)
     hadaj_text_rect = hadaj_text.get_rect(center=(500,100))
