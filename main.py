@@ -24,6 +24,7 @@ pygame.display.set_caption("Poprava")
 #nastavenie hry
 FPS = 60
 clock = pygame.time.Clock()
+hranie = True
 
 #ukaz ronka a zajka
 ronko = pygame.image.load("./Obrazky/ronko.png")
@@ -58,7 +59,11 @@ A = 65
 for i in range(26):
     x = startx + medzera * 2 + ((polomer * 2 +medzera) * (i % 13))  #vytvorenie pozicii na Xovej osi
     y = starty + ((i // 13) * (medzera + polomer * 2))              #vytvorenie pozicii na Yovej osi        //-delenie celych cisel = pokial i nebude >= 13 tak tam bude 0
-    pismenka.append([x,y, chr(A + i), True])                        #x, y urcoju poziciu , chr(A+1) - pismenko ktore tam bude , True - viditelne alebo neviditelne
+    pismenka.append([x,y, chr(A + i), True])                        #x, y urcu-ju poziciu , chr(A+1) - pismenko ktore tam bude , True - viditelne alebo neviditelne
+
+def hraj_muzicku():
+    pygame.mixer.music.load("./muzicka/muzicka.mp3")
+    pygame.mixer.music.play(-1)
 
 def get_font_pixel(size):
     return pygame.font.Font("font.ttf", size)
@@ -76,9 +81,6 @@ def koniec_hry(hrac, stav_hry, vybrane_slovo):
             prehra_text = get_font_pixel(50).render(hrac + " zomrel! ", True, cierna)
             prehra_text_rect = prehra_text.get_rect(center=(400,270))
             OKNO.blit(prehra_text,prehra_text_rect)
-
-        spravne_slovo_text = get_font_pixel(18).render("Spravne slovo bolo: " + vybrane_slovo, True, cierna)
-        spravne_slovo_text_rect = spravne_slovo_text.get_rect(center=(450,190))
 
         vypnut_tlacitko = button(pos=(400,400), text_input="Vypnut", font= get_font_pixel(70), base_color = cierna, hovering_color = cervena)
 
@@ -100,6 +102,8 @@ def koniec_hry(hrac, stav_hry, vybrane_slovo):
             else:
                 OKNO.blit(obrazky_zajko[hangman_obrazok], (1,1))
 
+        spravne_slovo_text = get_font_pixel(18).render("Spravne slovo bolo: " + vybrane_slovo, True, cierna)
+        spravne_slovo_text_rect = spravne_slovo_text.get_rect(center=(450,190))
         OKNO.blit(spravne_slovo_text, spravne_slovo_text_rect)
 
         pygame.display.update()
@@ -264,7 +268,8 @@ def vyber_narocnosti():
                     vyber_koho_obesit(vybrane_slovo)
 
 def main_menu():
-    while True:
+    while hranie:
+        hraj_muzicku()
         myska_pozicia = pygame.mouse.get_pos()
         clock.tick(FPS)
         OKNO.fill(biela)
