@@ -56,6 +56,7 @@ pismenka = []
 startx = round((SIRKA - (polomer *2 + medzera) * 13)/2)
 starty = 400
 A = 65
+
 for i in range(26):
     x = startx + medzera * 2 + ((polomer * 2 +medzera) * (i % 13))  #vytvorenie pozicii na Xovej osi
     y = starty + ((i // 13) * (medzera + polomer * 2))              #vytvorenie pozicii na Yovej osi        //-delenie celych cisel = pokial i nebude >= 13 tak tam bude 0
@@ -69,7 +70,7 @@ def get_font_pixel(size):
     return pygame.font.Font("font.ttf", size)
 
 def koniec_hry(hrac, stav_hry, vybrane_slovo):
-    global hangman_obrazok
+    global hangman_obrazok, slova, uhadnute
     while True:
         myska_pozicia = pygame.mouse.get_pos()
         OKNO.fill(biela)
@@ -82,9 +83,10 @@ def koniec_hry(hrac, stav_hry, vybrane_slovo):
             prehra_text_rect = prehra_text.get_rect(center=(400,270))
             OKNO.blit(prehra_text,prehra_text_rect)
 
-        vypnut_tlacitko = button(pos=(400,400), text_input="Vypnut", font= get_font_pixel(70), base_color = cierna, hovering_color = cervena)
+        hra_tlacitko = button(pos=(300,400), text_input="Hrat", font= get_font_pixel(25), base_color = cierna, hovering_color = zelena)
+        vypnut_tlacitko = button(pos=(500,400), text_input="Vypnut", font= get_font_pixel(25), base_color = cierna, hovering_color = cervena)
 
-        for tlacitko in [vypnut_tlacitko]:
+        for tlacitko in [vypnut_tlacitko,hra_tlacitko]:
             tlacitko.zmenenie_farby(myska_pozicia)
             tlacitko.aktualizuj(OKNO)
 
@@ -113,6 +115,15 @@ def koniec_hry(hrac, stav_hry, vybrane_slovo):
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if vypnut_tlacitko.check_na_stlacenie(myska_pozicia):
                         pygame.quit()
+                    if hra_tlacitko.check_na_stlacenie(myska_pozicia):
+                        slova = []
+                        uhadnute = []
+                        hangman_obrazok = 0
+                        for i in range(26):
+                            x = startx + medzera * 2 + ((polomer * 2 +medzera) * (i % 13))  
+                            y = starty + ((i // 13) * (medzera + polomer * 2))              
+                            pismenka.append([x,y, chr(A + i), True])                        
+                        main_menu()
 
 def kresli(hrac, vybrane_slovo):
     OKNO.fill(biela)
@@ -295,6 +306,5 @@ def main_menu():
                 if hra_tlacitko.check_na_stlacenie(myska_pozicia):
                     vyber_narocnosti()
                 if vypnut_tlacitko.check_na_stlacenie(myska_pozicia):
-                    pygame.quit()
-                    
+                    pygame.quit()               
 main_menu()
