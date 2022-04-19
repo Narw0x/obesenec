@@ -62,9 +62,10 @@ for i in range(26):
     y = starty + ((i // 13) * (medzera + polomer * 2))              #vytvorenie pozicii na Yovej osi        //-delenie celych cisel = pokial i nebude >= 13 tak tam bude 0
     pismenka.append([x,y, chr(A + i), True])                        #x, y urcu-ju poziciu , chr(A+1) - pismenko ktore tam bude , True - viditelne alebo neviditelne
 
-def hraj_muzicku():
-    pygame.mixer.music.load("./muzicka/muzicka.mp3")
-    pygame.mixer.music.play(-1)
+
+def hraj_muzicku_klik():
+    pygame.mixer.music.load("./muzicka/klik.wav")
+    pygame.mixer.music.play(0)
 
 def get_font_pixel(size):
     return pygame.font.Font("font.ttf", size)
@@ -122,7 +123,7 @@ def prehra_hra(hrac, vybrane_slovo):
         prehra_text_rect = prehra_text.get_rect(center=(400,270))
         OKNO.blit(prehra_text,prehra_text_rect)
 
-        vypnut_tlacitko = button(pos=(500,400), text_input="Vypnut", font= get_font_pixel(25), base_color = cierna, hovering_color = cervena)
+        vypnut_tlacitko = button(pos=(400,400), text_input="Vypnut", font= get_font_pixel(70), base_color = cierna, hovering_color = cervena)
 
         for tlacitko in [vypnut_tlacitko]:
             tlacitko.zmenenie_farby(myska_pozicia)
@@ -152,9 +153,11 @@ def prehra_hra(hrac, vybrane_slovo):
                     pygame.quit()
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if vypnut_tlacitko.check_na_stlacenie(myska_pozicia):
+                        hraj_muzicku_klik()
                         pygame.quit()
                     
 def kresli(hrac, vybrane_slovo):
+    global hangman_obrazok
     OKNO.fill(biela)
     
     #kreslenie slova
@@ -177,14 +180,15 @@ def kresli(hrac, vybrane_slovo):
 
     if hrac == "ronko":
         if hangman_obrazok > 6:
-            stav_hry = 0
-            koniec_hry(hrac, stav_hry, vybrane_slovo)
+            hangman_obrazok = 6
+            OKNO.blit(obrazky_ronnie[hangman_obrazok], (1,1))
         else:
             OKNO.blit(obrazky_ronnie[hangman_obrazok], (1,1))
+        
     if hrac == "zajko":
         if hangman_obrazok > 6:
-            stav_hry = 0
-            koniec_hry(hrac, stav_hry, vybrane_slovo)
+            hangman_obrazok = 6
+            OKNO.blit(obrazky_zajko[hangman_obrazok], (1,1))
         else:
             OKNO.blit(obrazky_zajko[hangman_obrazok], (1,1))
 
@@ -218,6 +222,7 @@ def hra(hrac, vybrane_slovo):
                     if viditelne:
                         vzdialenost = math.sqrt((x - m_x)**2 + (y - m_y)**2)
                         if vzdialenost < polomer:
+                            hraj_muzicku_klik()
                             pismenko[3] = False
                             uhadnute.append(pis)
                             if pis not in vybrane_slovo:
@@ -260,13 +265,16 @@ def vyber_koho_obesit(vybrane_slovo):
         pygame.display.update()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                hraj_muzicku_klik()
                 pygame.quit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if Ronko_tlacitko.check_na_stlacenie(myska_pozicia):
                     hrac = "ronko"
+                    hraj_muzicku_klik()
                     hra(hrac, vybrane_slovo)
                 if Zajko_tlacitko.check_na_stlacenie(myska_pozicia):
                     hrac = "zajko"
+                    hraj_muzicku_klik()
                     hra(hrac, vybrane_slovo)
 
 def vyber_narocnosti():
@@ -297,17 +305,19 @@ def vyber_narocnosti():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if lahke_tacitko.check_na_stlacenie(myska_pozicia):
                     vybrane_slovo = random.choice(lahke_slova)
+                    hraj_muzicku_klik()
                     vyber_koho_obesit(vybrane_slovo)
                 if stredne_tacitko.check_na_stlacenie(myska_pozicia):
                     vybrane_slovo = random.choice(stredne_slova)
+                    hraj_muzicku_klik()
                     vyber_koho_obesit(vybrane_slovo)
                 if tazke_tacitko.check_na_stlacenie(myska_pozicia):
                     vybrane_slovo = random.choice(tazke_slova)
+                    hraj_muzicku_klik()
                     vyber_koho_obesit(vybrane_slovo)
 
 def main_menu():
     while hranie:
-        hraj_muzicku()
         myska_pozicia = pygame.mouse.get_pos()
         clock.tick(FPS)
         OKNO.fill(biela)
@@ -328,11 +338,14 @@ def main_menu():
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                hraj_muzicku_klik()
                 pygame.quit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if hra_tlacitko.check_na_stlacenie(myska_pozicia):
+                    hraj_muzicku_klik()
                     vyber_narocnosti()
                 if vypnut_tlacitko.check_na_stlacenie(myska_pozicia):
+                    hraj_muzicku_klik()
                     pygame.quit()  
-                                 
+
 main_menu()
