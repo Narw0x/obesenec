@@ -69,24 +69,62 @@ def hraj_muzicku():
 def get_font_pixel(size):
     return pygame.font.Font("font.ttf", size)
 
-def koniec_hry(hrac, stav_hry, vybrane_slovo):
+def vyhra_hra(hrac, vybrane_slovo):
+    global slova, uhadnute, hangman_obrazok
+    while True:
+        myska_pozicia = pygame.mouse.get_pos()
+        OKNO.fill(biela)
+
+        vyhra_text = get_font_pixel(50).render(hrac + " prezil! ", True, cierna)
+        vyhra_text_rect = vyhra_text.get_rect(center=(400,270))
+        OKNO.blit(vyhra_text,vyhra_text_rect)
+
+        dalsi_level_tlacitko = button(pos=(250,400), text_input="Dalsi level", font= get_font_pixel(25), base_color = cierna, hovering_color = zelena)
+        vypnut_tlacitko = button(pos=(550,400), text_input="Vypnut", font= get_font_pixel(25), base_color = cierna, hovering_color = cervena)
+
+        for tlacitko in [vypnut_tlacitko,dalsi_level_tlacitko]:
+            tlacitko.zmenenie_farby(myska_pozicia)
+            tlacitko.aktualizuj(OKNO)
+
+        if hrac == "ronko":
+            OKNO.blit(obrazky_zajko[hangman_obrazok], (1,1))
+
+        if hrac == "zajko":
+            OKNO.blit(obrazky_zajko[hangman_obrazok], (1,1))
+        spravne_slovo_text = get_font_pixel(18).render("Spravne slovo bolo: " + vybrane_slovo, True, cierna)
+        spravne_slovo_text_rect = spravne_slovo_text.get_rect(center=(450,190))
+        OKNO.blit(spravne_slovo_text, spravne_slovo_text_rect)
+
+        pygame.display.update()
+        for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if vypnut_tlacitko.check_na_stlacenie(myska_pozicia):
+                        pygame.quit()
+                    if dalsi_level_tlacitko.check_na_stlacenie(myska_pozicia):
+                        slova = []
+                        uhadnute = []
+                        hangman_obrazok = 0
+                        for i in range(26):
+                            x = startx + medzera * 2 + ((polomer * 2 +medzera) * (i % 13))  
+                            y = starty + ((i // 13) * (medzera + polomer * 2))              
+                            pismenka.append([x,y, chr(A + i), True])                        
+                        vyber_narocnosti()
+
+def prehra_hra(hrac, vybrane_slovo):
     global hangman_obrazok, slova, uhadnute
     while True:
         myska_pozicia = pygame.mouse.get_pos()
         OKNO.fill(biela)
-        if stav_hry == 1:
-            vyhra_text = get_font_pixel(50).render(hrac + " prezil! ", True, cierna)
-            vyhra_text_rect = vyhra_text.get_rect(center=(400,270))
-            OKNO.blit(vyhra_text,vyhra_text_rect)
-        else:
-            prehra_text = get_font_pixel(50).render(hrac + " zomrel! ", True, cierna)
-            prehra_text_rect = prehra_text.get_rect(center=(400,270))
-            OKNO.blit(prehra_text,prehra_text_rect)
+        
+        prehra_text = get_font_pixel(50).render(hrac + " zomrel! ", True, cierna)
+        prehra_text_rect = prehra_text.get_rect(center=(400,270))
+        OKNO.blit(prehra_text,prehra_text_rect)
 
-        hra_tlacitko = button(pos=(300,400), text_input="Hrat", font= get_font_pixel(25), base_color = cierna, hovering_color = zelena)
         vypnut_tlacitko = button(pos=(500,400), text_input="Vypnut", font= get_font_pixel(25), base_color = cierna, hovering_color = cervena)
 
-        for tlacitko in [vypnut_tlacitko,hra_tlacitko]:
+        for tlacitko in [vypnut_tlacitko]:
             tlacitko.zmenenie_farby(myska_pozicia)
             tlacitko.aktualizuj(OKNO)
 
@@ -115,16 +153,7 @@ def koniec_hry(hrac, stav_hry, vybrane_slovo):
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if vypnut_tlacitko.check_na_stlacenie(myska_pozicia):
                         pygame.quit()
-                    if hra_tlacitko.check_na_stlacenie(myska_pozicia):
-                        slova = []
-                        uhadnute = []
-                        hangman_obrazok = 0
-                        for i in range(26):
-                            x = startx + medzera * 2 + ((polomer * 2 +medzera) * (i % 13))  
-                            y = starty + ((i // 13) * (medzera + polomer * 2))              
-                            pismenka.append([x,y, chr(A + i), True])                        
-                        main_menu()
-
+                    
 def kresli(hrac, vybrane_slovo):
     OKNO.fill(biela)
     
@@ -203,13 +232,11 @@ def hra(hrac, vybrane_slovo):
                 break
 
         if vyhra:
-            stav_hry = 1
-            koniec_hry(hrac, stav_hry, vybrane_slovo)
+            vyhra_hra(hrac, vybrane_slovo)
 
         if hangman_obrazok >= 6:
-            stav_hry = 0
-            koniec_hry(hrac, stav_hry, vybrane_slovo)
-            
+            prehra_hra(hrac, vybrane_slovo)
+             
 def vyber_koho_obesit(vybrane_slovo):
     while True:
         myska_pozicia = pygame.mouse.get_pos()
@@ -306,5 +333,6 @@ def main_menu():
                 if hra_tlacitko.check_na_stlacenie(myska_pozicia):
                     vyber_narocnosti()
                 if vypnut_tlacitko.check_na_stlacenie(myska_pozicia):
-                    pygame.quit()               
+                    pygame.quit()  
+                                 
 main_menu()
