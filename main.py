@@ -99,11 +99,14 @@ def vyhra_hra(hrac, vybrane_slovo):
         pygame.display.update()
         for event in pygame.event.get():
                 if event.type == pygame.QUIT:
+                    hraj_muzicku_klik()
                     pygame.quit()
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if vypnut_tlacitko.check_na_stlacenie(myska_pozicia):
+                        hraj_muzicku_klik()
                         pygame.quit()
                     if dalsi_level_tlacitko.check_na_stlacenie(myska_pozicia):
+                        hraj_muzicku_klik()
                         slova = []
                         uhadnute = []
                         hangman_obrazok = 0
@@ -150,6 +153,7 @@ def prehra_hra(hrac, vybrane_slovo):
         pygame.display.update()
         for event in pygame.event.get():
                 if event.type == pygame.QUIT:
+                    hraj_muzicku_klik()
                     pygame.quit()
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if vypnut_tlacitko.check_na_stlacenie(myska_pozicia):
