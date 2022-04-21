@@ -67,6 +67,10 @@ def hraj_muzicku_klik():
     pygame.mixer.music.load("./muzicka/klik.wav")
     pygame.mixer.music.play(0)
 
+def hraj_muzicku_prehra():
+    pygame.mixer.music.load("./muzicka/prehra.wav")
+    pygame.mixer.music.play(1)
+
 def get_font_pixel(size):
     return pygame.font.Font("font.ttf", size)
 
@@ -244,6 +248,7 @@ def hra(hrac, vybrane_slovo):
             vyhra_hra(hrac, vybrane_slovo)
 
         if hangman_obrazok >= 6:
+            hraj_muzicku_prehra()
             prehra_hra(hrac, vybrane_slovo)
              
 def vyber_koho_obesit(vybrane_slovo):
@@ -331,8 +336,9 @@ def main_menu():
         
         hra_tlacitko = button(pos=(400,250), text_input="Hrat", font= get_font_pixel(75), base_color = cierna, hovering_color = zelena)
         vypnut_tlacitko = button(pos=(400,350), text_input="Vypnut", font= get_font_pixel(75), base_color = cierna, hovering_color = cervena)
+        secret_level = button(pos= (150,400), text_input= "secret", font= get_font_pixel(5), base_color= biela, hovering_color= cierna)
 
-        for tlacitko in [hra_tlacitko, vypnut_tlacitko]:
+        for tlacitko in [hra_tlacitko, vypnut_tlacitko, secret_level]:
             tlacitko.zmenenie_farby(myska_pozicia)
             tlacitko.aktualizuj(OKNO)
 
@@ -350,6 +356,9 @@ def main_menu():
                     vyber_narocnosti()
                 if vypnut_tlacitko.check_na_stlacenie(myska_pozicia):
                     hraj_muzicku_klik()
-                    pygame.quit()  
+                    pygame.quit() 
+                if secret_level.check_na_stlacenie(myska_pozicia):
+                    hraj_muzicku_klik()
+                    pass
 
 main_menu()
