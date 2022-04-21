@@ -68,7 +68,7 @@ def hraj_muzicku_klik():
     pygame.mixer.music.play(0)
 
 def hraj_muzicku_prehra():
-    pygame.mixer.music.load("./muzicka/prehra.wav")
+    pygame.mixer.music.load("./muzicka/prehra.mp3")
     pygame.mixer.music.play(1)
 
 def get_font_pixel(size):
