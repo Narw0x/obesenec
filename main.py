@@ -69,7 +69,12 @@ def hraj_muzicku_klik():
 
 def hraj_muzicku_prehra():
     pygame.mixer.music.load("./muzicka/prehra.mp3")
-    pygame.mixer.music.play(1)
+    pygame.mixer.music.play(0)
+
+def hraj_muzicku_vyhra():
+    pygame.mixer.music.load("./muzicka/vyhra.wav")
+    pygame.mixer.music.play(0)
+
 
 def get_font_pixel(size):
     return pygame.font.Font("font.ttf", size)
@@ -245,6 +250,7 @@ def hra(hrac, vybrane_slovo):
                 break
 
         if vyhra:
+            hraj_muzicku_vyhra()
             vyhra_hra(hrac, vybrane_slovo)
 
         if hangman_obrazok >= 6:
