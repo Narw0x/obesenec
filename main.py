@@ -11,9 +11,14 @@ zelena = "#03fc0f"
 oranzova = "#fa9507"
 
 #slova
-lahke_slova = ["PYTHON", "ZAJAC", "PES", "DOM"]
-stredne_slova = ["PROGRAM", "TLACIAREN", "DEVELOPER", "MONITOR"]
-tazke_slova = ["MAGNETKA", "HORCIK", "MINERALKA", "TANIER"]
+lahke_slova = ["PES"]
+stredne_slova = ["HARDVER"]
+tazke_slova = ["OKULIARE"]
+
+#hinty
+hint = ""
+hint_viditelnost = False
+hint_tlacitko_viditelnost = True
 
 #nastavenia okna
 pygame.init()
@@ -62,25 +67,32 @@ for i in range(26):
     y = starty + ((i // 13) * (medzera + polomer * 2))              #vytvorenie pozicii na Yovej osi        //-delenie celych cisel = pokial i nebude >= 13 tak tam bude 0
     pismenka.append([x,y, chr(A + i), True])                        #x, y urcu-ju poziciu , chr(A+1) - pismenko ktore tam bude , True - viditelne alebo neviditelne
 
+def zistenie_hintu(vybrane_slovo):
+    if vybrane_slovo in lahke_slova:
+        if vybrane_slovo == "PES":
+            return "Je to velmi caste domace zviera"
+
+    if vybrane_slovo in stredne_slova:
+        if vybrane_slovo == "HARDVER":
+            return "Fyzicke casti zariadeni"
+
+    if vybrane_slovo in tazke_slova:
+        if vybrane_slovo == "OKULIARE":
+            return "Ludia ich nosia aby lepsie videli"
 
 def hraj_muzicku_klik():
     pygame.mixer.music.load("./muzicka/klik.wav")
-    pygame.mixer.music.play(0)
-
-def hraj_muzicku_prehra():
-    pygame.mixer.music.load("./muzicka/prehra.mp3")
     pygame.mixer.music.play(0)
 
 def hraj_muzicku_vyhra():
     pygame.mixer.music.load("./muzicka/vyhra.wav")
     pygame.mixer.music.play(0)
 
-
 def get_font_pixel(size):
     return pygame.font.Font("font.ttf", size)
 
 def vyhra_hra(hrac, vybrane_slovo):
-    global slova, uhadnute, hangman_obrazok
+    global slova, uhadnute, hangman_obrazok, hint_tlacitko_viditelnost, hint_viditelnost
     while True:
         myska_pozicia = pygame.mouse.get_pos()
         OKNO.fill(biela)
@@ -97,10 +109,12 @@ def vyhra_hra(hrac, vybrane_slovo):
             tlacitko.aktualizuj(OKNO)
 
         if hrac == "ronko":
-            OKNO.blit(obrazky_zajko[hangman_obrazok], (1,1))
+            OKNO.blit(obrazky_ronnie[hangman_obrazok], (1,1))
 
         if hrac == "zajko":
             OKNO.blit(obrazky_zajko[hangman_obrazok], (1,1))
+
+
         spravne_slovo_text = get_font_pixel(18).render("Spravne slovo bolo: " + vybrane_slovo, True, cierna)
         spravne_slovo_text_rect = spravne_slovo_text.get_rect(center=(450,190))
         OKNO.blit(spravne_slovo_text, spravne_slovo_text_rect)
@@ -119,6 +133,8 @@ def vyhra_hra(hrac, vybrane_slovo):
                         slova = []
                         uhadnute = []
                         hangman_obrazok = 0
+                        hint_viditelnost = False
+                        hint_tlacitko_viditelnost = True
                         for i in range(26):
                             x = startx + medzera * 2 + ((polomer * 2 +medzera) * (i % 13))  
                             y = starty + ((i // 13) * (medzera + polomer * 2))              
@@ -170,9 +186,9 @@ def prehra_hra(hrac, vybrane_slovo):
                         pygame.quit()
                     
 def kresli(hrac, vybrane_slovo):
-    global hangman_obrazok
+    global hangman_obrazok, hint_viditelnost, hint_tlacitko_viditelnost
     OKNO.fill(biela)
-    
+    myska_pozicia = pygame.mouse.get_pos()
     #kreslenie slova
     ukazane_slovo = ""
     for pismenko in vybrane_slovo:
@@ -210,6 +226,41 @@ def kresli(hrac, vybrane_slovo):
 
     OKNO.blit(hadaj_text,hadaj_text_rect)
 
+    if hint_viditelnost == True:
+        hint_text = get_font_pixel(15).render( hint , False, cierna)
+        hint_text_rect = hint_text.get_rect(center=(250,300))
+
+        OKNO.blit(hint_text,hint_text_rect)
+
+    if hint_tlacitko_viditelnost == True:
+        hint_tlacitko = button(pos=(700,250), text_input="HINT", font= get_font_pixel(30), base_color = cierna, hovering_color = zelena)
+
+        for tlacitko in [hint_tlacitko]:
+            tlacitko.zmenenie_farby(myska_pozicia)
+            tlacitko.aktualizuj(OKNO)
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            hraj_muzicku_klik()
+            pygame.quit()
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if hint_tlacitko_viditelnost == True:
+                if hint_tlacitko.check_na_stlacenie(myska_pozicia):
+                    hint_viditelnost = True
+                    hint_tlacitko_viditelnost = False
+            m_x, m_y = myska_pozicia
+            for pismenko in pismenka:
+                x, y, pis, viditelne = pismenko
+                if viditelne:
+                    vzdialenost = math.sqrt((x - m_x)**2 + (y - m_y)**2)
+                    if vzdialenost < polomer:
+                        hraj_muzicku_klik()
+                        pismenko[3] = False
+                        uhadnute.append(pis)
+                        if pis not in vybrane_slovo:
+                            hangman_obrazok += 1 
+
+
     pygame.display.update()
 
 def hra(hrac, vybrane_slovo):
@@ -228,19 +279,7 @@ def hra(hrac, vybrane_slovo):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                m_x, m_y = myska_pozicia
-                for pismenko in pismenka:
-                    x, y, pis, viditelne = pismenko
-                    if viditelne:
-                        vzdialenost = math.sqrt((x - m_x)**2 + (y - m_y)**2)
-                        if vzdialenost < polomer:
-                            hraj_muzicku_klik()
-                            pismenko[3] = False
-                            uhadnute.append(pis)
-                            if pis not in vybrane_slovo:
-                                hangman_obrazok += 1
-
+                  
         kresli(hrac, vybrane_slovo)
 
         vyhra = True
@@ -254,7 +293,6 @@ def hra(hrac, vybrane_slovo):
             vyhra_hra(hrac, vybrane_slovo)
 
         if hangman_obrazok >= 6:
-            hraj_muzicku_prehra()
             prehra_hra(hrac, vybrane_slovo)
              
 def vyber_koho_obesit(vybrane_slovo):
@@ -293,6 +331,7 @@ def vyber_koho_obesit(vybrane_slovo):
                     hra(hrac, vybrane_slovo)
 
 def vyber_narocnosti():
+    global hint
     while True:
         myska_pozicia = pygame.mouse.get_pos()
         clock.tick(FPS)
@@ -320,14 +359,17 @@ def vyber_narocnosti():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if lahke_tacitko.check_na_stlacenie(myska_pozicia):
                     vybrane_slovo = random.choice(lahke_slova)
+                    hint = zistenie_hintu(vybrane_slovo)
                     hraj_muzicku_klik()
                     vyber_koho_obesit(vybrane_slovo)
                 if stredne_tacitko.check_na_stlacenie(myska_pozicia):
                     vybrane_slovo = random.choice(stredne_slova)
+                    hint = zistenie_hintu(vybrane_slovo)
                     hraj_muzicku_klik()
                     vyber_koho_obesit(vybrane_slovo)
                 if tazke_tacitko.check_na_stlacenie(myska_pozicia):
                     vybrane_slovo = random.choice(tazke_slova)
+                    hint = zistenie_hintu(vybrane_slovo)
                     hraj_muzicku_klik()
                     vyber_koho_obesit(vybrane_slovo)
 
