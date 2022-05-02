@@ -74,7 +74,7 @@ def zistenie_hintu(vybrane_slovo):
 
     if vybrane_slovo in stredne_slova:
         if vybrane_slovo == "HARDVER":
-            return "Fyzicke casti zariadeni"
+            return "Fyzicke casti pocitaca"
 
     if vybrane_slovo in tazke_slova:
         if vybrane_slovo == "OKULIARE":
@@ -189,6 +189,7 @@ def kresli(hrac, vybrane_slovo):
     global hangman_obrazok, hint_viditelnost, hint_tlacitko_viditelnost
     OKNO.fill(biela)
     myska_pozicia = pygame.mouse.get_pos()
+    
     #kreslenie slova
     ukazane_slovo = ""
     for pismenko in vybrane_slovo:
@@ -246,6 +247,7 @@ def kresli(hrac, vybrane_slovo):
         if event.type == pygame.MOUSEBUTTONDOWN:
             if hint_tlacitko_viditelnost == True:
                 if hint_tlacitko.check_na_stlacenie(myska_pozicia):
+                    hraj_muzicku_klik()
                     hint_viditelnost = True
                     hint_tlacitko_viditelnost = False
             m_x, m_y = myska_pozicia
@@ -384,9 +386,8 @@ def main_menu():
         
         hra_tlacitko = button(pos=(400,250), text_input="Hrat", font= get_font_pixel(75), base_color = cierna, hovering_color = zelena)
         vypnut_tlacitko = button(pos=(400,350), text_input="Vypnut", font= get_font_pixel(75), base_color = cierna, hovering_color = cervena)
-        secret_level = button(pos= (150,400), text_input= "secret", font= get_font_pixel(5), base_color= biela, hovering_color= cierna)
 
-        for tlacitko in [hra_tlacitko, vypnut_tlacitko, secret_level]:
+        for tlacitko in [hra_tlacitko, vypnut_tlacitko]:
             tlacitko.zmenenie_farby(myska_pozicia)
             tlacitko.aktualizuj(OKNO)
 
@@ -405,8 +406,5 @@ def main_menu():
                 if vypnut_tlacitko.check_na_stlacenie(myska_pozicia):
                     hraj_muzicku_klik()
                     pygame.quit() 
-                if secret_level.check_na_stlacenie(myska_pozicia):
-                    hraj_muzicku_klik()
-                    pass
-
+                
 main_menu()
